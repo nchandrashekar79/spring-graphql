@@ -1,0 +1,71 @@
+"""
+Root queries. Spring Boot picks up any `.graphqls` file under `classpath:graphql/**`,
+so this file is discovered automatically - no configuration needed.
+"""
+type Query {
+    """
+    Find a single book by its id. Returns `null` when no such book exists, which is the
+    idiomatic GraphQL way to express "not found" for a nullable field.
+    """
+    bookById(id: ID!): Book
+
+    """List books. Pass `authorId` to narrow the result to a single author."""
+    books(authorId: ID): [Book!]!
+
+    """Find a single author by id. Returns `null` when no such author exists."""
+    authorById(id: ID!): Author
+
+    """List all authors."""
+    authors: [Author!]!
+}
+
+"""Root mutations. These change state and return the affected object."""
+type Mutation {
+    """Create a new book. The referenced author must already exist."""
+    addBook(input: BookInput!): Book!
+
+    """Replace the details of an existing book. Fails with `NOT_FOUND` if the id is unknown."""
+    updateBook(id: ID!, input: BookInput!): Book!
+
+    """Delete a book. Returns `true` when a book was removed, `false` when the id was unknown."""
+    deleteBook(id: ID!): Boolean!
+
+    """Create a new author."""
+    addAuthor(input: AuthorInput!): Author!
+}
+
+"""A published book."""
+type Book {
+    id: ID!
+    title: String!
+    isbn: String
+    publishedYear: Int
+
+    """
+    The book's author. Resolved by a batch loader, so asking for the author of many
+    books at once only performs a single lookup.
+    """
+    author: Author
+}
+
+"""A person who writes books."""
+type Author {
+    id: ID!
+    name: String!
+
+    """Every book written by this author. Also resolved by a batch loader."""
+    books: [Book!]!
+}
+
+"""Input payload for creating or updating a book."""
+input BookInput {
+    title: String!
+    isbn: String
+    publishedYear: Int
+    authorId: ID!
+}
+
+"""Input payload for creating an author."""
+input AuthorInput {
+    name: String!
+}
