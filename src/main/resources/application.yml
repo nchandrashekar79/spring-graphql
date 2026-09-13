@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: spring-graphql
+  graphql:
+    # GraphiQL is an in-browser IDE for exploring the API: http://localhost:8080/graphiql
+    graphiql:
+      enabled: true
+    schema:
+      # Exposes the schema in SDL text form at http://localhost:8080/graphql/schema
+      printer:
+        enabled: true
+  threads:
+    virtual:
+      # Java 21+ only. Lets Spring GraphQL run blocking controller methods on virtual threads,
+      # which is a good fit for the blocking in-memory repositories used in this demo.
+      enabled: true
